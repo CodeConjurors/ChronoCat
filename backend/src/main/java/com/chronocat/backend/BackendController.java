@@ -29,8 +29,8 @@ public class BackendController {
         return activityRepository.save(activity);
     }
 
-	public static void main(String[] args) {
-		SpringApplication.run(BackendController.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BackendController.class, args);
+    }
 
 }
