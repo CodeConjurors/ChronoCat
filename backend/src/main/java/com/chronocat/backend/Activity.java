@@ -1,7 +1,9 @@
 package com.chronocat.backend;
 
 import jakarta.persistence.Entity;
+
 import org.springframework.data.jpa.domain.AbstractPersistable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
