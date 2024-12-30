@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/** The backend main application and its API routes. */
 @SpringBootApplication
 @Controller
 public class BackendController {
