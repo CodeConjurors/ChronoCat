@@ -1,23 +1,8 @@
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-let DATA = [
-  {
-    time: '13:00',
-    name: 'Lunch',
-  },
-  {
-    time: '14:00',
-    name: 'Walk',
-  },
-  {
-    time: '18:00',
-    name: 'Dinner',
-  },
-]
-
-type ActivityProps = { time: string; name: string; deleteActivity: () => void }
+type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void }
 
 const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
   <View style={styles.item}>
@@ -29,20 +14,44 @@ const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
 )
 
 const App = () => {
-  const [activities, setActivities] = useState(DATA)
+  const [activities, setActivities] = useState<ActivityProps[]>([])
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
 
+  useEffect(() => {
+    fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities')
+      .then(response => response.json())
+      .then(json => setActivities(json))
+      .catch(error => console.error(error))
+  }, [])
+
   const addActivity = () => {
-    setActivities([...activities, { time, name }])
-    setTime('')
-    setName('')
+    fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        time: time,
+        name: name,
+      }),
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(responseData => {
+        setActivities(activities.concat(responseData))
+        setTime('')
+        setName('')
+      })
   }
 
-  const deleteActivity = (item: { time: string; name: string }) => {
-    setActivities(
-      activities.filter(activity => !(activity.time === item.time && activity.name === item.name))
-    )
+  const deleteActivity = (item: { id: number; time: string; name: string }) => {
+    fetch(`http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities/${item.id}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setActivities(activities.filter(activity => activity.id !== item.id))
+    })
   }
 
   return (
@@ -55,6 +64,7 @@ const App = () => {
               data={activities}
               renderItem={({ item }) => (
                 <Activity
+                  id={item.id}
                   time={item.time}
                   name={item.name}
                   deleteActivity={() => deleteActivity(item)}
