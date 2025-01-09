@@ -1,6 +1,15 @@
-import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useState } from 'react'
+import {
+  Button,
+  FlatList,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 
 type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void }
 
@@ -60,35 +69,48 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
-        <View>
-          <View style={styles.item}>
-            <Text>Activities</Text>
-            <FlatList
-              data={activities}
-              renderItem={({ item }) => (
-                <Activity
-                  id={item.id}
-                  time={item.time}
-                  name={item.name}
-                  deleteActivity={() => deleteActivity(item)}
-                />
-              )}
-            />
-          </View>
-          <View style={styles.item}>
-            <Text>Add a new activity</Text>
-            <TextInput placeholder='Time' onChangeText={newTime => setTime(newTime)} value={time} />
-            <TextInput placeholder='Name' onChangeText={newName => setName(newName)} value={name} />
-            <Button title='Add' onPress={addActivity} />
-          </View>
-        </View>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView behavior='padding' style={styles.container}>
+          <ScrollView>
+            <View style={styles.item}>
+              <Text>Activities</Text>
+              <FlatList
+                data={activities}
+                renderItem={({ item }) => (
+                  <Activity
+                    id={item.id}
+                    time={item.time}
+                    name={item.name}
+                    deleteActivity={() => deleteActivity(item)}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.item}>
+              <Text>Add a new activity</Text>
+              <TextInput
+                placeholder='Time'
+                onChangeText={newTime => setTime(newTime)}
+                value={time}
+              />
+              <TextInput
+                placeholder='Name'
+                onChangeText={newName => setName(newName)}
+                value={name}
+              />
+              <Button title='Add' onPress={addActivity} />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
   )
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   item: {
     alignItems: 'center',
     marginVertical: 10,
