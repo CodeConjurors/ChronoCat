@@ -19,39 +19,43 @@ const App = () => {
   const [name, setName] = useState('')
 
   useEffect(() => {
-    fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities')
-      .then(response => response.json())
-      .then(json => setActivities(json))
-      .catch(error => console.error(error))
+    fetchActivities()
   }, [])
 
-  const addActivity = () => {
-    fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        time: time,
-        name: name,
-      }),
-    })
-      .then(response => {
-        return response.json()
-      })
-      .then(responseData => {
-        setActivities(activities.concat(responseData))
-        setTime('')
-        setName('')
-      })
+  const fetchActivities = async () => {
+    const response = await fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities')
+    const json = await response.json()
+    setActivities(json)
   }
 
-  const deleteActivity = (item: { id: number; time: string; name: string }) => {
-    fetch(`http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities/${item.id}`, {
-      method: 'DELETE',
-    }).then(() => {
-      setActivities(activities.filter(activity => activity.id !== item.id))
-    })
+  const addActivity = async () => {
+    const response = await fetch(
+      'http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          time: time,
+          name: name,
+        }),
+      }
+    )
+    const json = await response.json()
+    setActivities(activities.concat(json))
+    setTime('')
+    setName('')
+  }
+
+  const deleteActivity = async (item: { id: number; time: string; name: string }) => {
+    const response = await fetch(
+      `http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities/${item.id}`,
+      {
+        method: 'DELETE',
+      }
+    )
+    setActivities(activities.filter(activity => activity.id !== item.id))
   }
 
   return (
