@@ -3,8 +3,6 @@ package com.chronocat.backend;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** The backend main application and its API routes. */
-@SpringBootApplication
+/** The backend's API routes. */
 @RestController
 @RequestMapping("/api/activities")
 public class BackendController {
@@ -38,10 +35,6 @@ public class BackendController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         activityRepository.deleteById(id);
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(BackendController.class, args);
     }
 
 }
