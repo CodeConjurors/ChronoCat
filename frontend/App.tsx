@@ -67,6 +67,17 @@ const App = () => {
     setActivities(activities.filter(activity => activity.id !== item.id))
   }
 
+  const renderItem = ({ item }: { item: ActivityProps }) => {
+    return (
+      <Activity
+        id={item.id}
+        time={item.time}
+        name={item.name}
+        deleteActivity={() => deleteActivity(item)}
+      />
+    )
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -74,17 +85,7 @@ const App = () => {
           <ScrollView>
             <View style={styles.item}>
               <Text>Activities</Text>
-              <FlatList
-                data={activities}
-                renderItem={({ item }) => (
-                  <Activity
-                    id={item.id}
-                    time={item.time}
-                    name={item.name}
-                    deleteActivity={() => deleteActivity(item)}
-                  />
-                )}
-              />
+              <FlatList data={activities} renderItem={renderItem} />
             </View>
             <View style={styles.item}>
               <Text>Add a new activity</Text>
