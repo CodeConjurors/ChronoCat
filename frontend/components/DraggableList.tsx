@@ -13,12 +13,15 @@ import { FlatList, View } from 'react-native'
  * const App = () => {
  *   const [data, setData] = useState(['First', 'Second', 'Third'])
  *
- *   const renderItem = ({ item, index, isActive }) => (
- *     <Text style={{ backgroundColor: isActive ? 'plum' : 'pink' }}>{item}</Text>
- *   )
+ *   const renderItem = ({ item, index, isActive }) => {
+ *     const bgColor = isActive ? '#fcc8c2' : '#f9c2ff'
+ *     const itemStyle = { backgroundColor: bgColor, padding: 16, margin: 10 }
+ *     return <Text style={itemStyle}>{item}</Text>
+ *   }
  *
  *   return (
  *     <DraggableList
+ *       style={{ marginTop: 50 }}
  *       data={data}
  *       setData={setData}
  *       renderItem={renderItem}
@@ -27,7 +30,7 @@ import { FlatList, View } from 'react-native'
  *   )
  * }
  */
-const DraggableList = ({ data, setData, renderItem, keyExtractor, onDragEnd }) => {
+const DraggableList = ({ data, setData, renderItem, keyExtractor, onDragEnd, style }) => {
   const [itemYBounds, setItemYBounds] = useState(Array(data.length).fill(0))
   const [startIndex, setStartIndex] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -91,6 +94,7 @@ const DraggableList = ({ data, setData, renderItem, keyExtractor, onDragEnd }) =
         data={data}
         renderItem={draggableRenderItem}
         keyExtractor={keyExtractor}
+        style={style}
       />
     </View>
   )
