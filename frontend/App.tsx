@@ -10,6 +10,9 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import env from './env'
+
+const apiUrl = env.apiUrl
 
 type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void }
 
@@ -32,14 +35,14 @@ const App = () => {
   }, [])
 
   const fetchActivities = async () => {
-    const response = await fetch('http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities')
+    const response = await fetch(apiUrl)
     const json = await response.json()
     setActivities(json)
   }
 
   const addActivity = async () => {
     const response = await fetch(
-      'http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities',
+      apiUrl,
       {
         method: 'POST',
         headers: {
@@ -59,7 +62,7 @@ const App = () => {
 
   const deleteActivity = async (item: { id: number; time: string; name: string }) => {
     const response = await fetch(
-      `http://ec2-3-91-8-31.compute-1.amazonaws.com:8080/api/activities/${item.id}`,
+      `${apiUrl}/${item.id}`,
       {
         method: 'DELETE',
       }
