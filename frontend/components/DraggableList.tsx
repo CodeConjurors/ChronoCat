@@ -93,6 +93,15 @@ const DraggableList = <ItemT,>(props: DraggableListProps<ItemT>) => {
   const [pan, setPan] = useState(0)
   const [offset, setOffset] = useState(0)
   const [scrollOffset, setScrollOffset] = useState(0)
+  const componentRef = useRef(null)
+  const [componentOffset, setComponentOffset] = useState(0)
+
+  const measureComponent = () => {
+    const callback: MeasureCallback = (x, y, width, height, pageX, pageY) => {
+      setComponentOffset(pageY)
+    }
+    componentRef.current?.measure(callback)
+  }
 
   // TODO: Find out if this useEffect is actually needed
   useEffect(() => {
@@ -178,7 +187,7 @@ const DraggableList = <ItemT,>(props: DraggableListProps<ItemT>) => {
     <View
       style={{
         position: 'absolute',
-        top: pan + offset,
+        top: pan + offset - componentOffset,
         zIndex: 10,
         opacity: 0.8,
         width: '100%',
@@ -196,6 +205,8 @@ const DraggableList = <ItemT,>(props: DraggableListProps<ItemT>) => {
 
   return (
     <View
+      onLayout={measureComponent}
+      ref={componentRef}
       onStartShouldSetResponder={shouldRespondToTouch}
       onResponderGrant={onStart}
       onResponderMove={onMove}
