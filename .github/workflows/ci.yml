@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - citest
+
+jobs:
+  deployment_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image to Docker Hub
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
+
+      - name: Initialize SSH variables
+        run: |
+          PRIVATE_KEY=`mktemp`
+          echo "PRIVATE_KEY=$PRIVATE_KEY" >> $GITHUB_ENV
+          chmod u=rw,go= $PRIVATE_KEY
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > $PRIVATE_KEY
+          KNOWN_HOSTS=`mktemp`
+          echo "KNOWN_HOSTS=$KNOWN_HOSTS" >> $GITHUB_ENV
+          echo "${{ secrets.SSH_KNOWN_PUBLIC_KEYS }}" > $KNOWN_HOSTS
+          LOGIN_INFO=${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }}
+          echo "LOGIN_INFO=$LOGIN_INFO" >> $GITHUB_ENV
+
+      - name: Update Docker image on Google Cloud
+        run: |
+          ssh -o UserKnownHostsFile=$KNOWN_HOSTS -i $PRIVATE_KEY $LOGIN_INFO '
+            docker stop chronocat-backend &&
+            docker rm chronocat-backend &&
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest &&
+            docker run --name chronocat-backend --network container:postgres -d ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
+          '
