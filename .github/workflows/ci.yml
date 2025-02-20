@@ -33,7 +33,7 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          version: >= 363.0.0
+          version: '>= 363.0.0'
 
       - name: Update Docker image on Google Cloud
         run: |
