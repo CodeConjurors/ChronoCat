@@ -25,27 +25,19 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
 
-      - name: Initialize SSH variables
-        run: |
-          PRIVATE_KEY_FILE=`mktemp`
-          echo "PRIVATE_KEY_FILE=$PRIVATE_KEY_FILE" >> $GITHUB_ENV
-          chmod u=rw,go= $PRIVATE_KEY_FILE
-          echo "$PRIVATE_KEY" > $PRIVATE_KEY_FILE
-          KNOWN_HOSTS_FILE=`mktemp`
-          echo "KNOWN_HOSTS_FILE=$KNOWN_HOSTS_FILE" >> $GITHUB_ENV
-          echo "$KNOWN_HOSTS" > $KNOWN_HOSTS_FILE
-          LOGIN_INFO="$USER_NAME"@"$HOST"
-          echo "LOGIN_INFO=$LOGIN_INFO" >> $GITHUB_ENV
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_PUBLIC_KEYS }}
-          USER_NAME: ${{ secrets.SSH_USER_NAME }}
-          HOST: ${{ secrets.SSH_HOST }}
+      - name: Login to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/329195735019/locations/global/workloadIdentityPools/github/providers/chronocat-repo
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: >= 363.0.0
 
       - name: Update Docker image on Google Cloud
         run: |
-          cat "$PRIVATE_KEY_FILE" | base64
-          ssh -o UserKnownHostsFile=$KNOWN_HOSTS_FILE -i $PRIVATE_KEY_FILE $LOGIN_INFO '
+          gcloud compute ssh chronocat-backend --command='
             docker stop chronocat-backend &&
             docker rm chronocat-backend &&
             docker pull "$DOCKERHUB_USERNAME"/chronocat-backend:latest &&
