@@ -32,6 +32,11 @@ public class BackendController {
         return activityRepository.save(activity);
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "1";
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
