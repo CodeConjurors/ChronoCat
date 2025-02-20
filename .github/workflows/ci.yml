@@ -31,6 +31,7 @@ jobs:
       - name: Login to Google Cloud
         uses: google-github-actions/auth@v2
         with:
+          project_id: apt-deployment-451410-i0
           workload_identity_provider: projects/329195735019/locations/global/workloadIdentityPools/github/providers/chronocat-repo
 
       - name: Setup Cloud SDK
