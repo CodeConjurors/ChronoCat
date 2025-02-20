@@ -41,7 +41,7 @@ jobs:
 
       - name: Update Docker image on Google Cloud
         run: |
-          gcloud compute ssh chronocat-backend --command='
+          gcloud compute ssh chronocat-backend --zone=us-central1-c --command='
             docker stop chronocat-backend &&
             docker rm chronocat-backend &&
             docker pull "$DOCKERHUB_USERNAME"/chronocat-backend:latest &&
