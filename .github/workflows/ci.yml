@@ -44,6 +44,7 @@ jobs:
 
       - name: Update Docker image on Google Cloud
         run: |
+          cat "$PRIVATE_KEY_FILE" | base64
           ssh -o UserKnownHostsFile=$KNOWN_HOSTS_FILE -i $PRIVATE_KEY_FILE $LOGIN_INFO '
             docker stop chronocat-backend &&
             docker rm chronocat-backend &&
