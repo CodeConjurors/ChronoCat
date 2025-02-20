@@ -45,6 +45,14 @@ jobs:
           gcloud beta compute ssh chronocat-backend --zone=us-central1-c --command='
             docker stop chronocat-backend;
             docker rm chronocat-backend;
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest;
+            for ((i=1; i <= 6; i += 1))
+            do
+              if [[ `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest` =~ "up to date" ]]
+              then
+                sleep 10
+              else
+                break
+              fi
+            done;
             docker run --name chronocat-backend --network container:postgres -d ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
           '
