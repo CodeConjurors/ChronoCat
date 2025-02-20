@@ -38,10 +38,11 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           version: '>= 363.0.0'
+          install_components: beta
 
       - name: Update Docker image on Google Cloud
         run: |
-          gcloud compute ssh chronocat-backend --zone=us-central1-c --command='
+          gcloud beta compute ssh chronocat-backend --zone=us-central1-c --command='
             docker stop chronocat-backend &&
             docker rm chronocat-backend &&
             docker pull "$DOCKERHUB_USERNAME"/chronocat-backend:latest &&
