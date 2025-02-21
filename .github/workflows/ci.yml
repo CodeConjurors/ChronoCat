@@ -15,44 +15,29 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          distribution: temurin
+          java-version: 17
 
-      - name: Build and push Docker image to Docker Hub
-        uses: docker/build-push-action@v6
-        with:
-          context: backend
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
+      - name: Build project with Maven
+        run: mvn clean package -Dmaven.test.skip
 
-      - name: Login to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          project_id: apt-deployment-451410-i0
-          workload_identity_provider: projects/329195735019/locations/global/workloadIdentityPools/github/providers/chronocat-repo
-
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          version: '>= 363.0.0'
-          install_components: beta
-
-      - name: Update Docker image on Google Cloud
+      - name: Initialize SSH variables
         run: |
-          gcloud beta compute ssh chronocat-backend --zone=us-central1-c --command='
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod u=rw,go= ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KNOWN_PUBLIC_KEYS }}" > ~/.ssh/known_hosts
+
+      - name: Copy JAR file to Google Cloud
+        run: rsync -avz target/backend-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER_NAME }}/app/app.jar
+
+      - name: Restart backend on Google Cloud
+        run: |
+          ssh ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }} '
             docker stop chronocat-backend;
             docker rm chronocat-backend;
-            for ((i=1; i <= 6; i += 1))
-            do
-              if [[ `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest` =~ "up to date" ]]
-              then
-                sleep 10
-              else
-                break
-              fi
-            done;
-            docker run --name chronocat-backend --network container:postgres -d ${{ secrets.DOCKERHUB_USERNAME }}/chronocat-backend:latest
+            docker run --name chronocat-backend --network container:postgres --mount type=bind,src=/home/${{ secrets.SSH_USER_NAME }}/app,dst=/app -d eclipse-temurin:17-jre-alpine java -jar /app/app.jar
           '
