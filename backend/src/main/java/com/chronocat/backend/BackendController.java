@@ -34,7 +34,7 @@ public class BackendController {
 
     @GetMapping("/test")
     public String test() {
-        return "2";
+        return "3";
     }
 
     @DeleteMapping("/{id}")
