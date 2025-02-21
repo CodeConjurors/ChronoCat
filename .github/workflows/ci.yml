@@ -23,6 +23,7 @@ jobs:
 
       - name: Build project with Maven
         run: mvn clean package -Dmaven.test.skip
+        context: backend
 
       - name: Initialize SSH variables
         run: |
@@ -32,7 +33,7 @@ jobs:
           echo "${{ secrets.SSH_KNOWN_PUBLIC_KEYS }}" > ~/.ssh/known_hosts
 
       - name: Copy JAR file to Google Cloud
-        run: rsync -avz target/backend-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER_NAME }}/app/app.jar
+        run: rsync -avz backend/target/backend-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER_NAME }}/app/app.jar
 
       - name: Restart backend on Google Cloud
         run: |
