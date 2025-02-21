@@ -8,9 +8,6 @@ on:
 jobs:
   deployment_pipeline:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -25,7 +22,7 @@ jobs:
         working-directory: ./backend
         run: mvn clean package -Dmaven.test.skip
 
-      - name: Initialize SSH variables
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -36,9 +33,4 @@ jobs:
         run: rsync -avz backend/target/backend-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER_NAME }}/app/app.jar
 
       - name: Restart backend on Google Cloud
-        run: |
-          ssh ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }} '
-            docker stop chronocat-backend;
-            docker rm chronocat-backend;
-            docker run --name chronocat-backend --network container:postgres --mount type=bind,src=/home/${{ secrets.SSH_USER_NAME }}/app,dst=/app -d eclipse-temurin:17-jre-alpine java -jar /app/app.jar
-          '
+        run: ssh ${{ secrets.SSH_USER_NAME }}@${{ secrets.SSH_HOST }} docker restart chronocat-backend
