@@ -22,8 +22,8 @@ jobs:
           java-version: 17
 
       - name: Build project with Maven
+        working-directory: ./backend
         run: mvn clean package -Dmaven.test.skip
-        context: backend
 
       - name: Initialize SSH variables
         run: |
