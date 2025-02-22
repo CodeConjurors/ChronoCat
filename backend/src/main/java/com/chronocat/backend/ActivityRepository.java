@@ -14,4 +14,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Modifying
     @Query("UPDATE Activity SET index = index - 1 WHERE index > ?1")
     public void pullForwardAllSubsequentIndices(Long index);
+
+    @Modifying
+    @Query("UPDATE Activity SET index = index + ?1 WHERE index >= ?2 AND index <= ?3")
+    public void moveMultiple(Long movementAmount, Long startIndex, Long endIndex);
 }

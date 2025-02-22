@@ -35,4 +35,21 @@ public class ActivityService {
             activityRepository.deleteById(id);
         }
     }
+
+    public Activity edit(Long id, Activity editedActivity) {
+        Optional<Activity> origActivityOpt = activityRepository.findById(id);
+        if (!origActivityOpt.isPresent()) {
+            return null;
+        }
+        Activity origActivity = origActivityOpt.get();
+        if (editedActivity.getIndex() > origActivity.getIndex()) {
+            activityRepository.moveMultiple(-1l, origActivity.getIndex() + 1, editedActivity.getIndex());
+        } else if (editedActivity.getIndex() < origActivity.getIndex()) {
+            activityRepository.moveMultiple(1l, editedActivity.getIndex(), origActivity.getIndex() - 1);
+        }
+        origActivity.setTime(editedActivity.getTime());
+        origActivity.setName(editedActivity.getName());
+        origActivity.setIndex(editedActivity.getIndex());
+        return activityRepository.save(origActivity);
+    }
 }
