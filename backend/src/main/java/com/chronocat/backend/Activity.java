@@ -19,5 +19,5 @@ public class Activity extends AbstractPersistable<Long> {
 
     private String time;
     private String name;
-    private Integer index;
+    private Long index;
 }
