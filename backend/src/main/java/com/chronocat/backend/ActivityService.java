@@ -1,6 +1,7 @@
 package com.chronocat.backend;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,10 @@ public class ActivityService {
     }
 
     public void delete(Long id) {
-        activityRepository.deleteById(id);
+        final Optional<Activity> activity = activityRepository.findById(id);
+        if (activity.isPresent()) {
+            activityRepository.pullForwardAllSubsequentIndices(activity.get().getIndex());
+            activityRepository.deleteById(id);
+        }
     }
 }
