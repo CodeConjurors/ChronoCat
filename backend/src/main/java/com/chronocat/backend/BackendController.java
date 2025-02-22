@@ -3,7 +3,6 @@ package com.chronocat.backend;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,22 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class BackendController {
 
     @Autowired
-    private ActivityRepository activityRepository;
+    private ActivityService activityService;
 
     @GetMapping
     public List<Activity> list() {
-        return activityRepository.findAll(Sort.by(Sort.Direction.ASC, "index"));
+        return activityService.getAll();
     }
 
     @PostMapping
     public Activity create(@RequestBody Activity activity) {
-        return activityRepository.save(activity);
+        return activityService.create(activity);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        activityRepository.deleteById(id);
+        activityService.delete(id);
     }
 
 }
