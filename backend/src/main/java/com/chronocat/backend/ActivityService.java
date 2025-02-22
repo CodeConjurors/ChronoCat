@@ -21,6 +21,8 @@ public class ActivityService {
     public Activity create(Activity activity) {
         if (activity.getIndex() == null) {
             activity.setIndex(activityRepository.count());
+        } else {
+            activityRepository.pushBackAllSubsequentIndices(activity.getIndex());
         }
         return activityRepository.save(activity);
     }
