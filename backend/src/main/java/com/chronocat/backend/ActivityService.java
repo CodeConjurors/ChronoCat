@@ -19,6 +19,9 @@ public class ActivityService {
     }
 
     public Activity create(Activity activity) {
+        if (activity.getIndex() == null) {
+            activity.setIndex(activityRepository.count());
+        }
         return activityRepository.save(activity);
     }
 
