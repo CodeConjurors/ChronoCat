@@ -7,15 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 /** The Spring repository for Activity entities. */
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
-    @Modifying
-    @Query("UPDATE Activity SET index = index + 1 WHERE index >= ?1")
-    public void pushBackAllSubsequentIndices(Long index);
+    long countByTabTitle(String tabTitle);
 
     @Modifying
-    @Query("UPDATE Activity SET index = index - 1 WHERE index > ?1")
-    public void pullForwardAllSubsequentIndices(Long index);
+    @Query("UPDATE Activity SET index = index + 1 WHERE tabTitle = ?1 AND index >= ?2")
+    public void pushBackAllSubsequentIndices(String tabTitle, Long index);
 
     @Modifying
-    @Query("UPDATE Activity SET index = index + ?1 WHERE index >= ?2 AND index <= ?3")
-    public void moveMultiple(Long movementAmount, Long startIndex, Long endIndex);
+    @Query("UPDATE Activity SET index = index - 1 WHERE tabTitle = ?1 AND index > ?2")
+    public void pullForwardAllSubsequentIndices(String tabTitle, Long index);
+
+    @Modifying
+    @Query("UPDATE Activity SET index = index + ?2 WHERE tabTitle = ?1 AND index >= ?3 AND index <= ?4")
+    public void moveMultiple(String tabTitle, Long movementAmount, Long startIndex, Long endIndex);
 }

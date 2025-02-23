@@ -21,9 +21,9 @@ public class ActivityService {
 
     public Activity create(Activity activity) {
         if (activity.getIndex() == null) {
-            activity.setIndex(activityRepository.count());
+            activity.setIndex(activityRepository.countByTabTitle(activity.getTabTitle()));
         } else {
-            activityRepository.pushBackAllSubsequentIndices(activity.getIndex());
+            activityRepository.pushBackAllSubsequentIndices(activity.getTabTitle(), activity.getIndex());
         }
         return activityRepository.save(activity);
     }
@@ -31,7 +31,7 @@ public class ActivityService {
     public void delete(Long id) {
         final Optional<Activity> activity = activityRepository.findById(id);
         if (activity.isPresent()) {
-            activityRepository.pullForwardAllSubsequentIndices(activity.get().getIndex());
+            activityRepository.pullForwardAllSubsequentIndices(activity.get().getTabTitle(), activity.get().getIndex());
             activityRepository.deleteById(id);
         }
     }
@@ -43,9 +43,9 @@ public class ActivityService {
         }
         Activity origActivity = origActivityOpt.get();
         if (editedActivity.getIndex() > origActivity.getIndex()) {
-            activityRepository.moveMultiple(-1l, origActivity.getIndex() + 1, editedActivity.getIndex());
+            activityRepository.moveMultiple(origActivity.getTabTitle(), -1l, origActivity.getIndex() + 1, editedActivity.getIndex());
         } else if (editedActivity.getIndex() < origActivity.getIndex()) {
-            activityRepository.moveMultiple(1l, editedActivity.getIndex(), origActivity.getIndex() - 1);
+            activityRepository.moveMultiple(origActivity.getTabTitle(), 1l, editedActivity.getIndex(), origActivity.getIndex() - 1);
         }
         origActivity.setTime(editedActivity.getTime());
         origActivity.setName(editedActivity.getName());

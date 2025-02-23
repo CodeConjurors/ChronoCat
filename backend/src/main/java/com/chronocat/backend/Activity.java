@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class Activity extends AbstractPersistable<Long> {
 
+    private String tabTitle;
     private String time;
     private String name;
     private Long index;
