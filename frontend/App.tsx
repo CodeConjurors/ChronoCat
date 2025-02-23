@@ -2,14 +2,11 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useState } from 'react'
 import {
   Button,
-  FlatList,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native'
+import DraggableList from './components/DraggableList'
 import env from './env'
 
 const apiUrl = env.apiUrl
@@ -17,18 +14,25 @@ const apiUrl = env.apiUrl
 type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void }
 
 const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
-  <View style={styles.item}>
-    <Text style={styles.item}>
+  <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10 }}>
+    <View>
+    <Text style={{ marginBottom: 5 }}>
       {time} - {name}
     </Text>
     <Button title='Delete' onPress={deleteActivity} />
+    </View>
   </View>
+)
+
+const ListEmptyMessage = () => (
+  <Text>No items</Text>
 )
 
 const App = () => {
   const [activities, setActivities] = useState<ActivityProps[]>([])
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
+  const [draggingEnabled, setDraggingEnabled] = useState(false)
 
   useEffect(() => {
     fetchActivities()
@@ -51,6 +55,7 @@ const App = () => {
         body: JSON.stringify({
           time: time,
           name: name,
+          tabTitle: '',
         }),
       }
     )
@@ -70,7 +75,7 @@ const App = () => {
     setActivities(activities.filter(activity => activity.id !== item.id))
   }
 
-  const renderItem = ({ item }: { item: ActivityProps }) => {
+  const renderItem = ({ item, state }) => {
     return (
       <Activity
         id={item.id}
@@ -81,46 +86,60 @@ const App = () => {
     )
   }
 
+  const onDragEnd = async (from, to) => {
+    await fetch(
+      `${apiUrl}/${activities[to].id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          time: activities[to].time,
+          name: activities[to].name,
+          index: to,
+        }),
+      }
+    )
+  }
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView behavior='padding' style={styles.container}>
-          <ScrollView>
-            <View style={styles.item}>
-              <Text>Activities</Text>
-              <FlatList data={activities} renderItem={renderItem} />
-            </View>
-            <View style={styles.item}>
-              <Text>Add a new activity</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+            <View>
+              <DraggableList
+                style={{ height: '60%' }}
+                data={activities}
+                setData={setActivities}
+                renderItem={renderItem}
+                onDragEnd={onDragEnd}
+                draggingEnabled={draggingEnabled}
+                ListEmptyComponent={<ListEmptyMessage />}
+              />
+              <View style={{ marginHorizontal: 10 }}>
+              <Button
+                title={draggingEnabled ? 'Stop Editing' : 'Edit'}
+                onPress={() => setDraggingEnabled(!draggingEnabled)}
+                color={draggingEnabled ? 'lightgray' : 'steelblue'}
+              />
               <TextInput
+                style={{ marginVertical: 5 }}
                 placeholder='Time'
                 onChangeText={newTime => setTime(newTime)}
                 value={time}
               />
               <TextInput
+                style={{ marginVertical: 5 }}
                 placeholder='Name'
                 onChangeText={newName => setName(newName)}
                 value={name}
               />
               <Button title='Add' onPress={addActivity} />
+              </View>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
       </SafeAreaView>
     </SafeAreaProvider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    alignItems: 'center',
-    marginVertical: 10,
-    marginHorizontal: 16,
-    fontSize: 20,
-  },
-})
 
 export default App
