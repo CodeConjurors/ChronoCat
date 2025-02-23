@@ -297,11 +297,11 @@ const DraggableItem = (props: DraggableItemProps) => {
     }
   }, [bottomYPos])
 
-  if (props.index === 0) {
-    useEffect(() => {
+  useEffect(() => {
+    if (props.index === 0) {
       props.itemYBounds[0] = topYPos
-    }, [topYPos])
-  }
+    }
+  }, [topYPos])
 
   const measureHandle = () => {
     const callback: MeasureCallback = (x, y, width, height, pageX) => {
