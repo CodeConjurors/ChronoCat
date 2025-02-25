@@ -1,6 +1,8 @@
 package com.chronocat.backend;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -17,8 +19,13 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class Activity extends AbstractPersistable<Long> {
 
-    private String tabTitle;
     private String time;
+
     private String name;
+
     private Long index;
+
+    @ManyToOne
+    @JoinColumn(name = "dayId", nullable = false)
+    private Day day;
 }

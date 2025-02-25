@@ -1,5 +1,6 @@
 package com.chronocat.backend;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,26 +13,41 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ActivityService {
 
+    private static final Date DEFAULT_DATE = Date.valueOf("2000-01-01");
+
     @Autowired
     private ActivityRepository activityRepository;
+
+    @Autowired
+    private DayService dayService;
 
     public List<Activity> getAll() {
         return activityRepository.findAll(Sort.by(Sort.Direction.ASC, "index"));
     }
 
     public Activity create(Activity activity) {
-        if (activity.getIndex() == null) {
-            activity.setIndex(activityRepository.countByTabTitle(activity.getTabTitle()));
-        } else {
-            activityRepository.pushBackAllSubsequentIndices(activity.getTabTitle(), activity.getIndex());
+        if (activity.getDay() == null) {
+            Optional<Day> day = dayService.getByDate(DEFAULT_DATE);
+            if (day.isPresent()) {
+                activity.setDay(day.get());
+            } else {
+                activity.setDay(dayService.create(new Day(DEFAULT_DATE, List.<Activity>of())));
+            }
         }
+
+        if (activity.getIndex() == null) {
+            activity.setIndex(activityRepository.countByDay(activity.getDay()));
+        } else {
+            activityRepository.pushBackAllSubsequentIndices(activity.getDay(), activity.getIndex());
+        }
+
         return activityRepository.save(activity);
     }
 
     public void delete(Long id) {
         final Optional<Activity> activity = activityRepository.findById(id);
         if (activity.isPresent()) {
-            activityRepository.pullForwardAllSubsequentIndices(activity.get().getTabTitle(), activity.get().getIndex());
+            activityRepository.pullForwardAllSubsequentIndices(activity.get().getDay(), activity.get().getIndex());
             activityRepository.deleteById(id);
         }
     }
@@ -43,9 +59,9 @@ public class ActivityService {
         }
         Activity origActivity = origActivityOpt.get();
         if (editedActivity.getIndex() > origActivity.getIndex()) {
-            activityRepository.moveMultiple(origActivity.getTabTitle(), -1l, origActivity.getIndex() + 1, editedActivity.getIndex());
+            activityRepository.moveMultiple(origActivity.getDay(), -1l, origActivity.getIndex() + 1, editedActivity.getIndex());
         } else if (editedActivity.getIndex() < origActivity.getIndex()) {
-            activityRepository.moveMultiple(origActivity.getTabTitle(), 1l, editedActivity.getIndex(), origActivity.getIndex() - 1);
+            activityRepository.moveMultiple(origActivity.getDay(), 1l, editedActivity.getIndex(), origActivity.getIndex() - 1);
         }
         origActivity.setTime(editedActivity.getTime());
         origActivity.setName(editedActivity.getName());
