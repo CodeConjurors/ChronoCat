@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** The backend's API routes. */
 @RestController
 @RequestMapping("/api/activities")
-public class BackendController {
+public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
