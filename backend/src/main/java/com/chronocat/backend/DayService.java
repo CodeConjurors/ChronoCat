@@ -19,6 +19,12 @@ public class DayService {
         return dayRepository.findAll();
     }
 
+    public List<Activity> getActivitiesFor(Long id) {
+        return dayRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException())
+            .getActivities();
+    }
+
     public Optional<Day> getByDate(Date date) {
         return dayRepository.findByDate(date);
     }
