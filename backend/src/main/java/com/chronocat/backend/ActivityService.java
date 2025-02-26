@@ -53,11 +53,8 @@ public class ActivityService {
     }
 
     public Activity edit(Long id, Activity editedActivity) {
-        Optional<Activity> origActivityOpt = activityRepository.findById(id);
-        if (!origActivityOpt.isPresent()) {
-            return null;
-        }
-        Activity origActivity = origActivityOpt.get();
+        Activity origActivity = activityRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException());
         if (editedActivity.getIndex() > origActivity.getIndex()) {
             activityRepository.moveMultiple(origActivity.getDay(), -1l, origActivity.getIndex() + 1, editedActivity.getIndex());
         } else if (editedActivity.getIndex() < origActivity.getIndex()) {
