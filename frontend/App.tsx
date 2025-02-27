@@ -87,7 +87,7 @@ const App = () => {
         <KeyboardAvoidingView behavior='padding' style={styles.container}>
           <ScrollView>
             <View style={styles.item}>
-              <Text>Activities</Text>
+              <Text>Activitiez</Text>
               <FlatList data={activities} renderItem={renderItem} />
             </View>
             <View style={styles.item}>
