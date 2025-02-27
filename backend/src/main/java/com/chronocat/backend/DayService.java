@@ -15,14 +15,15 @@ public class DayService {
     @Autowired
     private DayRepository dayRepository;
 
+    @Autowired
+    private ActivityRepository activityRepository;
+
     public List<Day> getAll() {
         return dayRepository.findAll();
     }
 
     public List<Activity> getActivitiesFor(Long id) {
-        return dayRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException())
-            .getActivities();
+        return activityRepository.findByDayIdOrderByIndex(id);
     }
 
     public Optional<Day> getByDate(Date date) {
