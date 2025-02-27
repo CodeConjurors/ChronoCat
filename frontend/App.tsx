@@ -16,16 +16,12 @@ type ActivityProps = { id: number; time: string; name: string; deleteActivity: (
 const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
   <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10 }}>
     <View>
-    <Text style={{ marginBottom: 5 }}>
-      {time} - {name}
-    </Text>
-    <Button title='Delete' onPress={deleteActivity} />
+      <Text style={{ marginBottom: 5 }}>
+        {time} - {name}
+      </Text>
+      <Button title='Delete' onPress={deleteActivity} />
     </View>
   </View>
-)
-
-const ListEmptyMessage = () => (
-  <Text>No items</Text>
 )
 
 const App = () => {
@@ -75,16 +71,14 @@ const App = () => {
     setActivities(activities.filter(activity => activity.id !== item.id))
   }
 
-  const renderItem = ({ item, state }) => {
-    return (
-      <Activity
-        id={item.id}
-        time={item.time}
-        name={item.name}
-        deleteActivity={() => deleteActivity(item)}
-      />
-    )
-  }
+  const renderItem = ({ item, state }) => (
+    <Activity
+      id={item.id}
+      time={item.time}
+      name={item.name}
+      deleteActivity={() => deleteActivity(item)}
+    />
+  )
 
   const onDragEnd = async (from, to) => {
     await fetch(
@@ -106,37 +100,37 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
-            <View>
-              <DraggableList
-                style={{ height: '60%' }}
-                data={activities}
-                setData={setActivities}
-                renderItem={renderItem}
-                onDragEnd={onDragEnd}
-                draggingEnabled={draggingEnabled}
-                ListEmptyComponent={<ListEmptyMessage />}
-              />
-              <View style={{ marginHorizontal: 10 }}>
-              <Button
-                title={draggingEnabled ? 'Stop Editing' : 'Edit'}
-                onPress={() => setDraggingEnabled(!draggingEnabled)}
-                color={draggingEnabled ? 'lightgray' : 'steelblue'}
-              />
-              <TextInput
-                style={{ marginVertical: 5 }}
-                placeholder='Time'
-                onChangeText={newTime => setTime(newTime)}
-                value={time}
-              />
-              <TextInput
-                style={{ marginVertical: 5 }}
-                placeholder='Name'
-                onChangeText={newName => setName(newName)}
-                value={name}
-              />
-              <Button title='Add' onPress={addActivity} />
-              </View>
-            </View>
+        <View>
+          <DraggableList
+            style={{ height: '60%' }}
+            data={activities}
+            setData={setActivities}
+            renderItem={renderItem}
+            onDragEnd={onDragEnd}
+            draggingEnabled={draggingEnabled}
+            ListEmptyComponent={<Text>No items</Text>}
+          />
+          <View style={{ marginHorizontal: 10 }}>
+            <Button
+              title={draggingEnabled ? 'Stop Editing' : 'Edit'}
+              onPress={() => setDraggingEnabled(!draggingEnabled)}
+              color={draggingEnabled ? 'lightgray' : 'steelblue'}
+            />
+            <TextInput
+              style={{ marginVertical: 5 }}
+              placeholder='Time'
+              onChangeText={newTime => setTime(newTime)}
+              value={time}
+            />
+            <TextInput
+              style={{ marginVertical: 5 }}
+              placeholder='Name'
+              onChangeText={newName => setName(newName)}
+              value={name}
+            />
+            <Button title='Add' onPress={addActivity} />
+          </View>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   )
