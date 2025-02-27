@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** The backend's API routes. */
 @RestController
-@RequestMapping("/api/activities")
+@RequestMapping("/api/activitiez")
 public class BackendController {
 
     @Autowired
