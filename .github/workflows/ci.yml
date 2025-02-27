@@ -2,8 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths-ignore: ['frontend/**']
 
 jobs:
   deployment_pipeline:
