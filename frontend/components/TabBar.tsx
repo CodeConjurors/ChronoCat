@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Button, FlatList, ListRenderItem, View } from 'react-native'
 
 type TabBarProps<ItemT> = {
@@ -10,6 +11,12 @@ type TabBarProps<ItemT> = {
 }
 
 const TabBar = <ItemT,>(props: TabBarProps<ItemT>) => {
+  useEffect(() => {
+    if (!props.data.includes(props.selectedItem) && props.data.length > 0) {
+      props.setSelectedItem(props.data[0])
+    }
+  }, [props.data])
+
   const renderItem: ListRenderItem<ItemT> = ({ item }) => (
     <Button
       onPress={() => props.setSelectedItem(item)}
