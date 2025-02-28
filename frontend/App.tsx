@@ -36,14 +36,14 @@ const App = () => {
   }, [])
 
   const fetchActivities = async () => {
-    const response = await fetch(apiUrl)
+    const response = await fetch(`${apiUrl}/api/activities`)
     const json = await response.json()
     setActivities(json)
   }
 
   const addActivity = async () => {
     const response = await fetch(
-      apiUrl,
+      `${apiUrl}/api/activities`,
       {
         method: 'POST',
         headers: {
@@ -64,7 +64,7 @@ const App = () => {
 
   const deleteActivity = async (item: { id: number; time: string; name: string }) => {
     const response = await fetch(
-      `${apiUrl}/${item.id}`,
+      `${apiUrl}/api/activities/${item.id}`,
       {
         method: 'DELETE',
       }
@@ -83,7 +83,7 @@ const App = () => {
 
   const onDragEnd = async (from, to) => {
     await fetch(
-      `${apiUrl}/${activities[to].id}`,
+      `${apiUrl}/api/activities/${activities[to].id}`,
       {
         method: 'PUT',
         headers: {
