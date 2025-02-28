@@ -16,11 +16,13 @@ type ActivityProps = { id: number; time: string; name: string; deleteActivity: (
 
 const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
   <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10 }}>
-    <View>
-      <Text style={{ marginBottom: 5 }}>
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      <Text style={{ height: '100%', marginBottom: 5, verticalAlign: 'middle' }}>
         {time} - {name}
       </Text>
-      <Button title='Delete' onPress={deleteActivity} />
+      <View style={{ marginLeft: 10 }}>
+        <Button title='Delete' onPress={deleteActivity} />
+      </View>
     </View>
   </View>
 )
