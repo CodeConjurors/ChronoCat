@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native'
 import DraggableList from './components/DraggableList'
+import TabBar from './components/TabBar'
 import env from './env'
 
 const apiUrl = env.apiUrl
@@ -131,6 +132,14 @@ const App = () => {
             <Button title='Add' onPress={addActivity} />
           </View>
         </View>
+        <TabBar
+          data={['Pe 28.2.', 'La 1.3.', 'Su 2.3.', 'Ma 3.3.', 'Ti 4.3.', 'Ke 5.3.']}
+          titleExtractor={item => item}
+          keyExtractor={item => item}
+          selectedItem={'La 1.3.'}
+          setSelectedItem={item => console.log('Clicked:', item)}
+          highlightColor='deepskyblue'
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   )
