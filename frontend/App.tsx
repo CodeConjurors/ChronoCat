@@ -28,6 +28,7 @@ const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
 const App = () => {
   const [activities, setActivities] = useState<ActivityProps[]>([])
   const [days, setDays] = useState([])
+  const [selectedDay, setSelectedDay] = useState(null)
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
   const [draggingEnabled, setDraggingEnabled] = useState(false)
@@ -144,8 +145,8 @@ const App = () => {
           data={days}
           titleExtractor={item => item.date}
           keyExtractor={item => item.id}
-          selectedItem={days[0]}
-          setSelectedItem={item => console.log('Clicked:', item.date)}
+          selectedItem={selectedDay}
+          setSelectedItem={item => setSelectedDay(item)}
           highlightColor='deepskyblue'
         />
       </SafeAreaView>
