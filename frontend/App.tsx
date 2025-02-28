@@ -66,7 +66,7 @@ const App = () => {
         body: JSON.stringify({
           time: time,
           name: name,
-          tabTitle: '',
+          day: selectedDay,
         }),
       }
     )
