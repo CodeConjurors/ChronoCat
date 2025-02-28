@@ -27,18 +27,26 @@ const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
 
 const App = () => {
   const [activities, setActivities] = useState<ActivityProps[]>([])
+  const [days, setDays] = useState([])
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
   const [draggingEnabled, setDraggingEnabled] = useState(false)
 
   useEffect(() => {
     fetchActivities()
+    fetchDays()
   }, [])
 
   const fetchActivities = async () => {
     const response = await fetch(`${apiUrl}/api/activities`)
     const json = await response.json()
     setActivities(json)
+  }
+
+  const fetchDays = async () => {
+    const response = await fetch(`${apiUrl}/api/days`)
+    const json = await response.json()
+    setDays(json)
   }
 
   const addActivity = async () => {
@@ -133,11 +141,11 @@ const App = () => {
           </View>
         </View>
         <TabBar
-          data={['Pe 28.2.', 'La 1.3.', 'Su 2.3.', 'Ma 3.3.', 'Ti 4.3.', 'Ke 5.3.']}
-          titleExtractor={item => item}
-          keyExtractor={item => item}
-          selectedItem={'La 1.3.'}
-          setSelectedItem={item => console.log('Clicked:', item)}
+          data={days}
+          titleExtractor={item => item.date}
+          keyExtractor={item => item.id}
+          selectedItem={days[0]}
+          setSelectedItem={item => console.log('Clicked:', item.date)}
           highlightColor='deepskyblue'
         />
       </SafeAreaView>
