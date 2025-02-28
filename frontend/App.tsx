@@ -33,7 +33,7 @@ const App = () => {
   const [selectedDay, setSelectedDay] = useState(null)
   const [time, setTime] = useState('')
   const [name, setName] = useState('')
-  const [draggingEnabled, setDraggingEnabled] = useState(false)
+  const [editModeOn, setEditModeOn] = useState(false)
 
   useEffect(() => {
     if (days.includes(selectedDay)) {
@@ -124,14 +124,14 @@ const App = () => {
             setData={setActivities}
             renderItem={renderItem}
             onDragEnd={onDragEnd}
-            draggingEnabled={draggingEnabled}
+            draggingEnabled={editModeOn}
             ListEmptyComponent={<Text>No items</Text>}
           />
           <View style={{ marginHorizontal: 10 }}>
             <Button
-              title={draggingEnabled ? 'Stop Editing' : 'Edit'}
-              onPress={() => setDraggingEnabled(!draggingEnabled)}
-              color={draggingEnabled ? 'lightgray' : 'steelblue'}
+              title={editModeOn ? 'Stop Editing' : 'Edit'}
+              onPress={() => setEditModeOn(!editModeOn)}
+              color={editModeOn ? 'lightgray' : 'steelblue'}
             />
             <TextInput
               style={{ marginVertical: 5 }}
