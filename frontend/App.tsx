@@ -34,15 +34,20 @@ const App = () => {
   const [draggingEnabled, setDraggingEnabled] = useState(false)
 
   useEffect(() => {
-    fetchActivities()
-    fetchDays()
-  }, [])
+    if (days.includes(selectedDay)) {
+      fetchActivities()
+    }
+  }, [selectedDay])
 
   const fetchActivities = async () => {
-    const response = await fetch(`${apiUrl}/api/activities`)
+    const response = await fetch(`${apiUrl}/api/days/${selectedDay.id}/activities`)
     const json = await response.json()
     setActivities(json)
   }
+
+  useEffect(() => {
+    fetchDays()
+  }, [])
 
   const fetchDays = async () => {
     const response = await fetch(`${apiUrl}/api/days`)
