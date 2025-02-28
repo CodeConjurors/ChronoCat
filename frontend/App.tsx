@@ -12,17 +12,19 @@ import env from './env'
 
 const apiUrl = env.apiUrl
 
-type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void }
+type ActivityProps = { id: number; time: string; name: string; deleteActivity: () => void; editModeOn: boolean }
 
-const Activity = ({ time, name, deleteActivity }: ActivityProps) => (
+const Activity = ({ time, name, deleteActivity, editModeOn }: ActivityProps) => (
   <View style={{ flex: 1, alignItems: 'center', paddingVertical: 10 }}>
     <View style={{ flex: 1, flexDirection: 'row' }}>
       <Text style={{ height: '100%', marginBottom: 5, verticalAlign: 'middle' }}>
         {time} - {name}
       </Text>
-      <View style={{ marginLeft: 10 }}>
-        <Button title='Delete' onPress={deleteActivity} />
-      </View>
+      {editModeOn &&
+        <View style={{ marginLeft: 10 }}>
+          <Button title='Delete' onPress={deleteActivity} />
+        </View>
+      }
     </View>
   </View>
 )
@@ -94,6 +96,7 @@ const App = () => {
       time={item.time}
       name={item.name}
       deleteActivity={() => deleteActivity(item)}
+      editModeOn={editModeOn}
     />
   )
 
